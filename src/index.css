@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Pretendard Variable", Pretendard, system-ui, -apple-system, "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+
+  /* winter night surfaces */
+  --color-page: #0b1226;
+  --color-card: #111a33;
+  --color-card-2: #16224a;
+  --color-line: #223056;
+
+  /* ink */
+  --color-ink: #eef4ff;
+  --color-sub: #9fb0d4;
+  --color-mute: #64749c;
+
+  /* accents */
+  --color-ice: #7cc0f5;
+  --color-ice-deep: #3987e5;
+  --color-onsen: #f0885a;
+
+  /* validated categorical slots (dark, surface #111a33) */
+  --color-cat-move: #3987e5;
+  --color-cat-stay: #9085e9;
+  --color-cat-food: #d95926;
+  --color-cat-tour: #199e70;
+  --color-cat-onsen: #e66767;
+  --color-cat-shop: #c98500;
+
+  /* status */
+  --color-warn: #fab219;
+  --color-over: #e66767;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-page);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  overscroll-behavior-y: none;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* iPhone safe areas (Dynamic Island / home indicator) */
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.pb-safe-nav {
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.5rem);
+}
+.pb-content {
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 6.5rem);
+}
+
+/* hide number input spinners */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
