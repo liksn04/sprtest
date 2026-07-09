@@ -1,4 +1,3 @@
-import { motion } from 'motion/react'
 import { Home, CalendarDays, Wallet, ListChecks, BookOpen } from 'lucide-react'
 import type { TabId } from '../App'
 
@@ -12,7 +11,7 @@ const TABS: { id: TabId; label: string; Icon: typeof Home }[] = [
 
 export default function TabNav({ tab, onChange }: { tab: TabId; onChange: (t: TabId) => void }) {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-line/60 bg-page/95 backdrop-blur-xl">
+    <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-card/95 shadow-float backdrop-blur-xl">
       <div className="pb-safe-nav mx-auto flex max-w-lg items-center justify-around px-2 pt-1.5">
         {TABS.map(({ id, label, Icon }) => {
           const active = tab === id
@@ -21,17 +20,16 @@ export default function TabNav({ tab, onChange }: { tab: TabId; onChange: (t: Ta
               key={id}
               onClick={() => onChange(id)}
               aria-current={active ? 'page' : undefined}
-              className="relative flex min-h-[48px] min-w-[56px] flex-col items-center justify-center gap-0.5 rounded-xl px-2"
+              className="press flex min-h-[48px] min-w-[56px] flex-col items-center justify-center gap-1 rounded-xl px-2"
             >
-              {active && (
-                <motion.span
-                  layoutId="tab-pill"
-                  className="absolute inset-x-0 -top-[7px] mx-auto h-0.5 w-8 rounded-full bg-ice"
-                  transition={{ type: 'spring', stiffness: 500, damping: 40 }}
-                />
-              )}
-              <Icon size={22} strokeWidth={active ? 2.4 : 1.8} className={active ? 'text-ice' : 'text-mute'} />
-              <span className={`text-[10px] font-medium ${active ? 'text-ice' : 'text-mute'}`}>{label}</span>
+              <Icon
+                size={23}
+                strokeWidth={active ? 2.5 : 1.9}
+                className={`transition-colors ${active ? 'text-accent' : 'text-mute'}`}
+              />
+              <span className={`text-[10px] font-semibold transition-colors ${active ? 'text-accent' : 'text-mute'}`}>
+                {label}
+              </span>
             </button>
           )
         })}

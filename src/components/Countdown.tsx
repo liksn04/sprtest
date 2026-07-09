@@ -12,6 +12,9 @@ function diffParts(target: number, now: number) {
   }
 }
 
+const pad = (n: number) => String(n).padStart(2, '0')
+
+/** Big D-day figure + live clock, styled for the gradient hero. */
 export default function Countdown() {
   const target = new Date(TRIP.departAt).getTime()
   const [now, setNow] = useState(() => Date.now())
@@ -24,33 +27,22 @@ export default function Countdown() {
   const t = diffParts(target, now)
 
   if (t.over) {
-    return (
-      <div className="text-center">
-        <p className="text-2xl font-bold text-ice">여행이 시작됐어요! ❄️</p>
-      </div>
-    )
+    return <p className="text-2xl font-extrabold text-white">여행이 시작됐어요! ❄️</p>
   }
 
-  const cells = [
-    { v: t.days, label: '일' },
-    { v: t.hours, label: '시간' },
-    { v: t.mins, label: '분' },
-    { v: t.secs, label: '초' },
-  ]
-
   return (
-    <div>
-      <p className="mb-2 text-center text-xs font-medium tracking-widest text-sub">출발까지</p>
-      <div className="flex items-stretch justify-center gap-2">
-        {cells.map((c) => (
-          <div
-            key={c.label}
-            className="flex min-w-[68px] flex-col items-center rounded-2xl border border-white/10 bg-white/5 px-2 py-3 backdrop-blur-sm"
-          >
-            <span className="text-2xl font-bold tabular-nums text-ink">{c.v}</span>
-            <span className="mt-0.5 text-[11px] text-sub">{c.label}</span>
-          </div>
-        ))}
+    <div className="flex items-end justify-between gap-3">
+      <div>
+        <p className="text-xs font-semibold text-white/70">출발까지</p>
+        <p className="mt-0.5 text-[44px] font-extrabold leading-none tracking-tight text-white">
+          D-{t.days}
+        </p>
+      </div>
+      <div className="rounded-2xl bg-white/16 px-3.5 py-2.5 backdrop-blur-sm">
+        <p className="text-lg font-bold tabular-nums leading-none text-white">
+          {pad(t.hours)}:{pad(t.mins)}:{pad(t.secs)}
+        </p>
+        <p className="mt-1 text-center text-[10px] font-medium text-white/70">시간 · 분 · 초</p>
       </div>
     </div>
   )

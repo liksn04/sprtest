@@ -4,8 +4,8 @@
   "description": "2027 삿포로 눈축제 & 조잔케이 온천 3박 4일 나만의 여행 가이드",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0b1226",
-  "theme_color": "#0b1226",
+  "background_color": "#f2f4f6",
+  "theme_color": "#f2f4f6",
   "lang": "ko",
   "icons": [
     {

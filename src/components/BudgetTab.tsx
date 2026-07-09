@@ -2,14 +2,17 @@ import { ArrowRightLeft } from 'lucide-react'
 import { BUDGET, DEFAULT_JPY_RATE, TRIP, fmtKRW } from '../data/trip'
 import { useLocalStorage } from '../hooks/useLocalStorage'
 
-function Bar({ ratio }: { ratio: number }) {
+function Bar({ ratio, track }: { ratio: number; track?: string }) {
   const pct = Math.min(ratio, 1) * 100
   const over = ratio > 1
   const near = !over && ratio > 0.9
-  const color = over ? 'var(--color-over)' : near ? 'var(--color-warn)' : 'var(--color-ice-deep)'
+  const color = over ? 'var(--color-over)' : near ? 'var(--color-warn)' : 'var(--color-accent)'
   return (
-    <div className="h-2 w-full overflow-hidden rounded-full bg-white/8">
-      <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: color }} />
+    <div className={`h-2 w-full overflow-hidden rounded-full ${track ?? 'bg-fill'}`}>
+      <div
+        className="h-full rounded-full transition-all duration-300"
+        style={{ width: `${pct}%`, background: color }}
+      />
     </div>
   )
 }
@@ -30,32 +33,27 @@ export default function BudgetTab() {
   }
 
   return (
-    <div className="space-y-4 pt-6">
-      <div>
-        <h1 className="text-xl font-extrabold">예산</h1>
-        <p className="mt-0.5 text-xs text-sub">지출을 입력하면 자동 저장돼요 (원 단위, 2인 합계)</p>
-      </div>
+    <div className="space-y-4 pt-8">
+      <header className="px-1">
+        <h1 className="text-[22px] font-extrabold tracking-tight">예산</h1>
+        <p className="mt-1 text-sm text-sub">지출을 입력하면 자동 저장돼요 · 원 단위, 2인 합계</p>
+      </header>
 
       {/* total */}
-      <section className="rounded-3xl border border-line/60 bg-card p-5">
-        <div className="flex items-end justify-between">
-          <div>
-            <p className="text-[11px] text-sub">총지출</p>
-            <p className="text-2xl font-extrabold tabular-nums">{fmtKRW(totalSpent)}</p>
-          </div>
-          <div className="text-right">
-            <p className="text-[11px] text-sub">{remain >= 0 ? '남은 예산' : '예산 초과'}</p>
-            <p className={`text-sm font-bold tabular-nums ${remain >= 0 ? 'text-ice' : 'text-over'}`}>
-              {fmtKRW(Math.abs(remain))}
-            </p>
-          </div>
-        </div>
-        <div className="mt-3">
+      <section className="rounded-[28px] bg-card p-6 shadow-card">
+        <p className="text-xs font-medium text-mute">지금까지 쓴 돈</p>
+        <p className="mt-1.5 text-[32px] font-extrabold tabular-nums leading-none tracking-tight">
+          {fmtKRW(totalSpent)}
+        </p>
+        <div className="mt-5">
           <Bar ratio={totalRatio} />
         </div>
-        <p className="mt-1.5 text-right text-[11px] tabular-nums text-sub">
-          {Math.round(totalRatio * 100)}% / 예산 {fmtKRW(totalPlanned)}
-        </p>
+        <div className="mt-2.5 flex items-center justify-between text-xs">
+          <span className="tabular-nums text-mute">{Math.round(totalRatio * 100)}% 사용</span>
+          <span className={`font-bold tabular-nums ${remain >= 0 ? 'text-accent' : 'text-over'}`}>
+            {remain >= 0 ? `${fmtKRW(remain)} 남음` : `${fmtKRW(-remain)} 초과`}
+          </span>
+        </div>
       </section>
 
       {/* per-category */}
@@ -64,13 +62,13 @@ export default function BudgetTab() {
           const s = spent[c.id] ?? 0
           const ratio = s / c.planned
           return (
-            <div key={c.id} className="rounded-2xl border border-line/60 bg-card p-4">
+            <div key={c.id} className="rounded-3xl bg-card p-4 shadow-card">
               <div className="flex items-center justify-between gap-2">
                 <div className="min-w-0">
                   <p className="text-sm font-bold">{c.label}</p>
-                  <p className="truncate text-[11px] text-sub">{c.note}</p>
+                  <p className="mt-0.5 truncate text-[11px] text-mute">{c.note}</p>
                 </div>
-                <label className="flex shrink-0 items-center gap-1 rounded-xl border border-line/60 bg-page/60 px-2.5 py-1.5">
+                <label className="flex shrink-0 items-center gap-1 rounded-2xl bg-fill px-3 py-2">
                   <input
                     type="number"
                     inputMode="numeric"
@@ -78,16 +76,18 @@ export default function BudgetTab() {
                     value={s === 0 ? '' : s}
                     placeholder="0"
                     onChange={(e) => setCategory(c.id, e.target.value)}
-                    className="w-24 bg-transparent text-right text-sm font-semibold tabular-nums text-ink outline-none placeholder:text-mute"
+                    className="w-24 bg-transparent text-right text-sm font-bold tabular-nums text-ink outline-none placeholder:text-mute"
                   />
-                  <span className="text-xs text-sub">원</span>
+                  <span className="text-xs font-medium text-sub">원</span>
                 </label>
               </div>
-              <div className="mt-3 flex items-center gap-2">
+              <div className="mt-3.5 flex items-center gap-2.5">
                 <div className="flex-1">
                   <Bar ratio={ratio} />
                 </div>
-                <span className={`w-20 text-right text-[11px] tabular-nums ${ratio > 1 ? 'font-bold text-over' : 'text-sub'}`}>
+                <span
+                  className={`w-24 text-right text-[11px] tabular-nums ${ratio > 1 ? 'font-bold text-over' : 'text-mute'}`}
+                >
                   {ratio > 1 ? `+${fmtKRW(s - c.planned)}` : `/ ${fmtKRW(c.planned)}`}
                 </span>
               </div>
@@ -97,14 +97,14 @@ export default function BudgetTab() {
       </section>
 
       {/* converter */}
-      <section className="rounded-2xl border border-line/60 bg-card p-4">
+      <section className="rounded-3xl bg-card p-5 shadow-card">
         <div className="flex items-center gap-2">
-          <ArrowRightLeft size={16} className="text-ice" />
-          <h2 className="text-sm font-bold">엔화 계산기</h2>
+          <ArrowRightLeft size={16} className="text-accent" />
+          <h2 className="text-[15px] font-bold">엔화 계산기</h2>
         </div>
-        <div className="mt-3 flex items-center gap-2">
-          <label className="flex flex-1 items-center gap-1 rounded-xl border border-line/60 bg-page/60 px-3 py-2.5">
-            <span className="text-sm text-sub">¥</span>
+        <div className="mt-4 flex items-center gap-2">
+          <label className="flex flex-1 items-center gap-1.5 rounded-2xl bg-fill px-3.5 py-3">
+            <span className="text-sm font-bold text-sub">¥</span>
             <input
               type="number"
               inputMode="numeric"
@@ -112,15 +112,15 @@ export default function BudgetTab() {
               value={jpy === 0 ? '' : jpy}
               placeholder="0"
               onChange={(e) => setJpy(Math.max(0, Number(e.target.value) || 0))}
-              className="w-full bg-transparent text-base font-semibold tabular-nums outline-none placeholder:text-mute"
+              className="w-full bg-transparent text-base font-bold tabular-nums outline-none placeholder:text-mute"
             />
           </label>
-          <span className="text-sub">=</span>
-          <p className="flex-1 rounded-xl bg-ice-deep/15 px-3 py-2.5 text-right text-base font-bold tabular-nums text-ice">
+          <span className="font-medium text-mute">=</span>
+          <p className="flex-1 rounded-2xl bg-accent-soft px-3.5 py-3 text-right text-base font-extrabold tabular-nums text-accent">
             {fmtKRW(jpy * rate)}
           </p>
         </div>
-        <label className="mt-2.5 flex items-center justify-between text-xs text-sub">
+        <label className="mt-3 flex items-center justify-between text-xs text-sub">
           <span>적용 환율 (원/¥) — 수정 가능</span>
           <input
             type="number"
@@ -129,7 +129,7 @@ export default function BudgetTab() {
             min={0}
             value={rate}
             onChange={(e) => setRate(Math.max(0, Number(e.target.value) || 0))}
-            className="w-16 rounded-lg border border-line/60 bg-page/60 px-2 py-1 text-right font-semibold tabular-nums text-ink outline-none"
+            className="w-16 rounded-xl bg-fill px-2 py-1.5 text-right font-bold tabular-nums text-ink outline-none"
           />
         </label>
       </section>

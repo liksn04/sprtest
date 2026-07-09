@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import SnowEffect from './components/SnowEffect'
 import TabNav from './components/TabNav'
 import HomeTab from './components/HomeTab'
 import ItineraryTab from './components/ItineraryTab'
@@ -24,15 +23,14 @@ export default function App() {
 
   return (
     <div className="min-h-dvh bg-page text-ink">
-      <SnowEffect />
-      <main className="pt-safe pb-content relative z-10 mx-auto max-w-lg px-4">
+      <main className="pt-safe pb-content relative mx-auto max-w-lg px-4">
         <AnimatePresence mode="wait">
           <motion.div
             key={tab}
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
-            transition={{ duration: 0.18, ease: 'easeOut' }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2, ease: [0.3, 0, 0.2, 1] }}
           >
             <View />
           </motion.div>

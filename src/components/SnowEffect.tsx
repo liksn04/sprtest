@@ -9,6 +9,7 @@ interface Flake {
   phase: number
 }
 
+/** Snowfall canvas that fills its nearest positioned parent. */
 export default function SnowEffect() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
@@ -19,6 +20,8 @@ export default function SnowEffect() {
 
     const ctx = canvas.getContext('2d')
     if (!ctx) return
+    const host = canvas.parentElement
+    if (!host) return
 
     let width = 0
     let height = 0
@@ -27,36 +30,37 @@ export default function SnowEffect() {
 
     const resize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2)
-      width = window.innerWidth
-      height = window.innerHeight
+      const rect = host.getBoundingClientRect()
+      width = rect.width
+      height = rect.height
       canvas.width = width * dpr
       canvas.height = height * dpr
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-      const count = Math.min(70, Math.floor(width / 7))
+      const count = Math.min(48, Math.floor(width / 8))
       flakes = Array.from({ length: count }, () => ({
         x: Math.random() * width,
         y: Math.random() * height,
-        r: 0.8 + Math.random() * 2.2,
-        vy: 0.35 + Math.random() * 0.8,
-        vx: -0.15 + Math.random() * 0.3,
+        r: 0.8 + Math.random() * 2,
+        vy: 0.3 + Math.random() * 0.7,
+        vx: -0.12 + Math.random() * 0.24,
         phase: Math.random() * Math.PI * 2,
       }))
     }
 
     const tick = () => {
       ctx.clearRect(0, 0, width, height)
-      ctx.fillStyle = 'rgba(210, 228, 255, 0.75)'
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.85)'
       for (const f of flakes) {
-        f.phase += 0.01
+        f.phase += 0.012
         f.y += f.vy
-        f.x += f.vx + Math.sin(f.phase) * 0.25
+        f.x += f.vx + Math.sin(f.phase) * 0.22
         if (f.y > height + 4) {
           f.y = -4
           f.x = Math.random() * width
         }
         if (f.x > width + 4) f.x = -4
         if (f.x < -4) f.x = width + 4
-        ctx.globalAlpha = 0.35 + (f.r / 3) * 0.5
+        ctx.globalAlpha = 0.3 + (f.r / 2.8) * 0.5
         ctx.beginPath()
         ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2)
         ctx.fill()
@@ -65,20 +69,15 @@ export default function SnowEffect() {
       raf = requestAnimationFrame(tick)
     }
 
+    const ro = new ResizeObserver(resize)
+    ro.observe(host)
     resize()
     tick()
-    window.addEventListener('resize', resize)
     return () => {
       cancelAnimationFrame(raf)
-      window.removeEventListener('resize', resize)
+      ro.disconnect()
     }
   }, [])
 
-  return (
-    <canvas
-      ref={canvasRef}
-      aria-hidden
-      className="pointer-events-none fixed inset-0 z-0"
-    />
-  )
+  return <canvas ref={canvasRef} aria-hidden className="pointer-events-none absolute inset-0 h-full w-full" />
 }

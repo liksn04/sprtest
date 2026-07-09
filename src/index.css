@@ -1,35 +1,97 @@
 @import "tailwindcss";
 
-@theme {
+@theme inline {
   --font-sans: "Pretendard Variable", Pretendard, system-ui, -apple-system, "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
 
-  /* winter night surfaces */
-  --color-page: #0b1226;
-  --color-card: #111a33;
-  --color-card-2: #16224a;
-  --color-line: #223056;
+  --color-page: var(--t-page);
+  --color-card: var(--t-card);
+  --color-fill: var(--t-fill);
+  --color-line: var(--t-line);
+  --color-ink: var(--t-ink);
+  --color-sub: var(--t-sub);
+  --color-mute: var(--t-mute);
+  --color-accent: var(--t-accent);
+  --color-accent-deep: var(--t-accent-deep);
+  --color-accent-soft: var(--t-accent-soft);
+  --color-onsen: var(--t-onsen);
+  --color-warn: var(--t-warn);
+  --color-over: var(--t-over);
 
-  /* ink */
-  --color-ink: #eef4ff;
-  --color-sub: #9fb0d4;
-  --color-mute: #64749c;
+  --color-cat-move: var(--t-cat-move);
+  --color-cat-stay: var(--t-cat-stay);
+  --color-cat-food: var(--t-cat-food);
+  --color-cat-tour: var(--t-cat-tour);
+  --color-cat-onsen: var(--t-cat-onsen);
+  --color-cat-shop: var(--t-cat-shop);
 
-  /* accents */
-  --color-ice: #7cc0f5;
-  --color-ice-deep: #3987e5;
-  --color-onsen: #f0885a;
+  --shadow-card: var(--t-shadow-card);
+  --shadow-float: var(--t-shadow-float);
+}
 
-  /* validated categorical slots (dark, surface #111a33) */
-  --color-cat-move: #3987e5;
-  --color-cat-stay: #9085e9;
-  --color-cat-food: #d95926;
-  --color-cat-tour: #199e70;
-  --color-cat-onsen: #e66767;
-  --color-cat-shop: #c98500;
+/* ── light (default) ─────────────────────────────────────────────── */
+:root {
+  --t-page: #f2f4f6;
+  --t-card: #ffffff;
+  --t-fill: #f2f4f6;
+  --t-line: #e5e8eb;
+  --t-ink: #191f28;
+  --t-sub: #4e5968;
+  --t-mute: #8b95a1;
+  --t-accent: #3182f6;
+  --t-accent-deep: #1b64da;
+  --t-accent-soft: #e8f3ff;
+  --t-onsen: #e8590c;
+  --t-warn: #eda100;
+  --t-over: #e34948;
 
-  /* status */
-  --color-warn: #fab219;
-  --color-over: #e66767;
+  /* validated categorical slots (light, white surface) */
+  --t-cat-move: #2a78d6;
+  --t-cat-stay: #4a3aa7;
+  --t-cat-food: #eb6834;
+  --t-cat-tour: #1baf7a;
+  --t-cat-onsen: #e34948;
+  --t-cat-shop: #eda100;
+
+  --t-shadow-card: 0 1px 2px rgba(2, 32, 71, 0.04), 0 6px 20px rgba(2, 32, 71, 0.06);
+  --t-shadow-float: 0 -2px 16px rgba(2, 32, 71, 0.08);
+
+  --t-hero-a: #1b64da;
+  --t-hero-b: #3182f6;
+  --t-hero-c: #55a4ff;
+}
+
+/* ── dark ────────────────────────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --t-page: #101014;
+    --t-card: #1b1b20;
+    --t-fill: #26262d;
+    --t-line: #2c2c33;
+    --t-ink: #eceff4;
+    --t-sub: #a8b0bb;
+    --t-mute: #6f7785;
+    --t-accent: #4593fc;
+    --t-accent-deep: #3182f6;
+    --t-accent-soft: #1d2c47;
+    --t-onsen: #ff9260;
+    --t-warn: #c98500;
+    --t-over: #e66767;
+
+    /* validated categorical slots (dark, #1b1b20 surface) */
+    --t-cat-move: #3987e5;
+    --t-cat-stay: #9085e9;
+    --t-cat-food: #d95926;
+    --t-cat-tour: #199e70;
+    --t-cat-onsen: #e66767;
+    --t-cat-shop: #c98500;
+
+    --t-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 20px rgba(0, 0, 0, 0.25);
+    --t-shadow-float: 0 -2px 16px rgba(0, 0, 0, 0.45);
+
+    --t-hero-a: #123b8f;
+    --t-hero-b: #1b64da;
+    --t-hero-c: #2f7ff0;
+  }
 }
 
 html {
@@ -38,12 +100,24 @@ html {
 
 body {
   margin: 0;
-  background: var(--color-page);
-  color: var(--color-ink);
+  background: var(--t-page);
+  color: var(--t-ink);
   font-family: var(--font-sans);
   overscroll-behavior-y: none;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
+}
+
+/* Toss-style press feedback */
+.press {
+  transition: transform 0.16s cubic-bezier(0.3, 0, 0.4, 1.4);
+}
+.press:active {
+  transform: scale(0.97);
+}
+
+.hero-gradient {
+  background: linear-gradient(140deg, var(--t-hero-a) 0%, var(--t-hero-b) 55%, var(--t-hero-c) 100%);
 }
 
 /* iPhone safe areas (Dynamic Island / home indicator) */
