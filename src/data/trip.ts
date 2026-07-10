@@ -183,164 +183,110 @@ export const CHECKLIST: ChecklistSection[] = [
       { id: 'k9', label: '선글라스', note: '맑은 날 설면 반사가 강해요' },
     ],
   },
-  {
-    id: 'onsen',
-    title: '온천 준비',
-    emoji: '♨️',
-    items: [
-      { id: 'o1', label: '문신 커버 스티커 (해당 시)', note: '문신 노출 시 입욕 제한 료칸 있음' },
-      { id: 'o2', label: '온천 에티켓 숙지', note: '가이드 탭 참고 — 수영복 불필요, 수건은 료칸 제공' },
-    ],
-  },
 ]
 
-// ── 가이드 ──────────────────────────────────────────────────────────────────
 
-export interface GuideCard {
-  title: string
-  lines: string[]
-  map?: string
-}
+// ── 여정 노선도 ──────────────────────────────────────────────────────────────
 
-export interface GuideSection {
+export interface RouteStop {
   id: string
-  title: string
+  name: string
+  sub: string
   emoji: string
-  cards: GuideCard[]
+  day: string
 }
 
-export const GUIDE: GuideSection[] = [
+export const ROUTE: RouteStop[] = [
+  { id: 'pus', name: '김해공항', sub: '부산 출발', emoji: '✈️', day: 'DAY 1' },
+  { id: 'cts', name: '신치토세', sub: '직항 2h 20m', emoji: '🛬', day: 'DAY 1' },
+  { id: 'spk', name: '삿포로', sub: '눈축제 · 2박', emoji: '❄️', day: 'DAY 1·3' },
+  { id: 'jzk', name: '조잔케이', sub: '온천 료칸 1박', emoji: '♨️', day: 'DAY 2' },
+  { id: 'otr', name: '오타루', sub: '운하 당일치기', emoji: '🏮', day: 'DAY 3' },
+]
+
+// ── 눈축제 회장 & 스팟 ───────────────────────────────────────────────────────
+
+export interface Venue {
+  id: 'odori' | 'susukino' | 'tsudome' | 'jozankei'
+  name: string
+  tag: string
+  emoji: string
+  lines: string[]
+  map: string
+}
+
+export const VENUES: Venue[] = [
   {
-    id: 'festival',
-    title: '삿포로 눈축제 3개 회장',
-    emoji: '❄️',
-    cards: [
-      {
-        title: '오도리 회장 (메인)',
-        lines: [
-          '도심 1.5km, 12개 블록에 대형 설상 조각',
-          '프로젝션 맵핑 쇼 + 라이트업 22:00까지',
-          '삿포로 TV타워 전망대에서 파노라마 뷰',
-          '지하철 오도리역 바로 앞 — 지하도(오로라타운)로 추위 피하며 이동 가능',
-        ],
-        map: 'Odori Park Sapporo',
-      },
-      {
-        title: '스스키노 회장 (얼음)',
-        lines: ['환락가 한복판 얼음조각 60여 점', '라이트업 23:00까지 — 저녁식사 후 산책 코스', '오도리에서 도보 10분'],
-        map: 'Susukino Sapporo',
-      },
-      {
-        title: '츠도무 회장 (체험)',
-        lines: ['대형 눈 미끄럼틀 · 스노 래프팅 등 체험형', '10:00–16:00 낮 운영, 셔틀버스 이용', '일정이 빠듯하면 과감히 생략 가능'],
-        map: 'Sapporo Community Dome Tsudome',
-      },
-    ],
+    id: 'odori',
+    name: '오도리 회장',
+    tag: '메인 · 대설상',
+    emoji: '🏔️',
+    lines: ['도심 1.5km 대형 설상 조각', '프로젝션 맵핑 + 라이트업 ~22시', 'TV타워 전망대 파노라마 뷰'],
+    map: 'Odori Park Sapporo',
   },
   {
-    id: 'onsen',
-    title: '조잔케이 온천 가이드',
+    id: 'susukino',
+    name: '스스키노 회장',
+    tag: '얼음조각',
+    emoji: '🧊',
+    lines: ['얼음조각 60여 점, 라이트업 ~23시', '저녁식사 후 산책 코스', '오도리에서 도보 10분'],
+    map: 'Susukino Sapporo',
+  },
+  {
+    id: 'tsudome',
+    name: '츠도무 회장',
+    tag: '체험 · 낮',
+    emoji: '🛷',
+    lines: ['대형 눈 미끄럼틀 · 스노 래프팅', '10:00–16:00 낮 운영, 셔틀버스', '일정 빠듯하면 과감히 생략'],
+    map: 'Sapporo Community Dome Tsudome',
+  },
+  {
+    id: 'jozankei',
+    name: '조잔케이 온천',
+    tag: '료칸 1박',
     emoji: '♨️',
-    cards: [
-      {
-        title: '조잔케이(定山渓)란?',
-        lines: [
-          '삿포로 남서쪽 27km, "삿포로의 안방 온천"',
-          '나트륨 염화물천 — 보온·보습 효과로 겨울에 최고',
-          '갓파(전설 속 요괴) 마을 — 곳곳에 갓파 동상',
-          '2월 초 "유키토로(눈 등불)" 촛불 행사 개최 시 필견',
-        ],
-        map: 'Jozankei Onsen',
-      },
-      {
-        title: '온천 에티켓 6계명',
-        lines: [
-          '① 탕에 들어가기 전 몸 씻기 (카케유)',
-          '② 수건은 탕 물에 넣지 않기 — 머리 위에',
-          '③ 긴 머리는 묶기',
-          '④ 수영복 착용 금지 (전원 나체 입욕)',
-          '⑤ 욕장 내 사진 촬영 절대 금지',
-          '⑥ 입욕 전후 물 충분히 마시기',
-        ],
-      },
-    ],
-  },
-  {
-    id: 'food',
-    title: '먹킷리스트',
-    emoji: '🍜',
-    cards: [
-      { title: '수프카레 GARAKU', lines: ['삿포로 수프카레 최고 인기점 (스스키노)', '치킨·야채 카레 + 밥 라지 무료'], map: 'Soup Curry GARAKU Sapporo' },
-      { title: '징기스칸 다루마 본점', lines: ['숯불 양고기 구이, 스스키노 노포', '웨이팅 있지만 회전 빠름 — 늦은 밤도 OK'], map: 'Jingisukan Daruma Honten' },
-      { title: '라멘요코초', lines: ['미소라멘 발상지 삿포로의 라멘 골목', '17개 점포 — 신겐·시라카바산소도 유명'], map: 'Ganso Sapporo Ramen Yokocho' },
-      { title: '니조시장 카이센동', lines: ['아침 해산물 덮밥 — 성게·연어알·게', '오이소 등 시장 안 식당'], map: 'Nijo Market Sapporo' },
-      { title: '르타오 본점 (오타루)', lines: ['더블 프로마쥬 치즈케이크', '사카이마치 거리 끝, 카페 이용 가능'], map: 'LeTAO Otaru' },
-      { title: '시메파르페', lines: ['술·저녁 후 파르페로 마무리하는 삿포로 문화', '스스키노 파르페 전문점 밤 늦게까지'], map: 'Parfait Susukino' },
-    ],
-  },
-  {
-    id: 'transport',
-    title: '교통 한눈에',
-    emoji: '🚆',
-    cards: [
-      {
-        title: '핵심 노선',
-        lines: [
-          '공항 ↔ 삿포로: JR 쾌속 에어포트 40분 · ¥1,150 · 15분 간격',
-          '삿포로 ↔ 오타루: JR 40분 · ¥750',
-          '삿포로 ↔ 조잔케이: 갓파라이너호 60분 · ¥960 (예약제)',
-          '시내: 지하철 3개 노선 — 오도리·스스키노역이 축제 거점',
-        ],
-      },
-      {
-        title: '결제 팁',
-        lines: [
-          '아이폰 지갑 Suica로 JR·지하철·편의점 논스톱',
-          '겨울 폭설로 JR 지연 잦음 — 공항 갈 땐 여유 있게',
-          '택시는 비쌈 — 심야 이동 외엔 대중교통 추천',
-        ],
-      },
-    ],
-  },
-  {
-    id: 'weather',
-    title: '2월 삿포로 날씨 & 복장',
-    emoji: '🌨️',
-    cards: [
-      {
-        title: '날씨',
-        lines: ['평균 최고 -1°C / 최저 -8°C, 체감 그 이하', '적설 80cm+ — 도로 대부분 눈·빙판', '실내·지하도는 따뜻함 — 벗기 쉬운 레이어링'],
-      },
-      {
-        title: '복장 공식',
-        lines: ['히트텍 + 니트 + 롱패딩', '방수 부츠 + 아이젠 + 두꺼운 양말', '모자·장갑·목도리 + 주머니에 핫팩'],
-      },
-    ],
+    lines: ['삿포로 남서쪽 27km, 갓파 마을', '나트륨 염화물천 — 겨울 보온 최고', '2월 초 유키토로 눈 등불 (개최 시)'],
+    map: 'Jozankei Onsen',
   },
 ]
 
-// ── 여행 일본어 ─────────────────────────────────────────────────────────────
+// ── 먹킷리스트 ───────────────────────────────────────────────────────────────
 
-export interface Phrase {
-  jp: string
-  read: string
-  ko: string
+export interface FoodSpot {
+  emoji: string
+  name: string
+  desc: string
+  map: string
 }
 
-export const PHRASES: Phrase[] = [
-  { jp: 'すみません', read: '스미마셍', ko: '실례합니다 / 저기요' },
-  { jp: 'ありがとうございます', read: '아리가토- 고자이마스', ko: '감사합니다' },
-  { jp: 'これください', read: '코레 쿠다사이', ko: '이거 주세요' },
-  { jp: 'いくらですか', read: '이쿠라데스카', ko: '얼마예요?' },
-  { jp: 'おすすめは何ですか', read: '오스스메와 난데스카', ko: '추천 메뉴가 뭐예요?' },
-  { jp: 'カードで払えますか', read: '카-도데 하라에마스카', ko: '카드 결제 되나요?' },
-  { jp: 'トイレはどこですか', read: '토이레와 도코데스카', ko: '화장실 어디예요?' },
-  { jp: '予約した○○です', read: '요야쿠시타 ○○데스', ko: '예약한 ○○입니다' },
-  { jp: '温泉は何時までですか', read: '온센와 난지마데 데스카', ko: '온천은 몇 시까지예요?' },
-  { jp: '写真を撮ってもいいですか', read: '샤신오 톳테모 이이데스카', ko: '사진 찍어도 되나요?' },
-  { jp: '持ち帰りでお願いします', read: '모치카에리데 오네가이시마스', ko: '포장해 주세요' },
-  { jp: '美味しかったです', read: '오이시캇타데스', ko: '맛있었어요' },
+export const FOOD_SPOTS: FoodSpot[] = [
+  { emoji: '🍛', name: '수프카레 GARAKU', desc: '삿포로 수프카레 1티어', map: 'Soup Curry GARAKU Sapporo' },
+  { emoji: '🍖', name: '징기스칸 다루마', desc: '숯불 양고기 노포', map: 'Jingisukan Daruma Honten' },
+  { emoji: '🍜', name: '라멘요코초', desc: '미소라멘 발상지 골목', map: 'Ganso Sapporo Ramen Yokocho' },
+  { emoji: '🦀', name: '니조시장 카이센동', desc: '성게·연어알 아침 덮밥', map: 'Nijo Market Sapporo' },
+  { emoji: '🍰', name: '르타오 본점', desc: '오타루 더블 프로마쥬', map: 'LeTAO Otaru' },
+  { emoji: '🍨', name: '시메파르페', desc: '삿포로식 마무리 파르페', map: 'Parfait Susukino' },
 ]
+
+// ── 교통 노선 ────────────────────────────────────────────────────────────────
+
+export interface TransitRoute {
+  from: string
+  to: string
+  mode: string
+  minutes: number
+  fare: string
+  note?: string
+}
+
+export const TRANSIT: TransitRoute[] = [
+  { from: '신치토세', to: '삿포로', mode: 'JR 쾌속 에어포트', minutes: 40, fare: '¥1,150', note: '15분 간격' },
+  { from: '삿포로', to: '조잔케이', mode: '갓파라이너호 버스', minutes: 60, fare: '¥960', note: '완전 예약제!' },
+  { from: '삿포로', to: '오타루', mode: 'JR 쾌속', minutes: 40, fare: '¥750', note: '왼쪽 창가 = 바다 뷰' },
+  { from: '시내 이동', to: '축제 회장', mode: '지하철 · 도보', minutes: 10, fare: '¥210~', note: '오도리·스스키노역 거점' },
+]
+
+export const TRANSIT_TIP = '아이폰 지갑에 Suica를 발급해두면 JR·지하철·편의점까지 논스톱이에요. 겨울 폭설로 JR 지연이 잦으니 공항 갈 땐 여유 있게!'
 
 // ── 유틸 ────────────────────────────────────────────────────────────────────
 

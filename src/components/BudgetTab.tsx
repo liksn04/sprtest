@@ -1,18 +1,61 @@
+import { motion } from 'motion/react'
 import { ArrowRightLeft } from 'lucide-react'
+import CountUp from './CountUp'
 import { BUDGET, DEFAULT_JPY_RATE, TRIP, fmtKRW } from '../data/trip'
 import { useLocalStorage } from '../hooks/useLocalStorage'
+import { stagger, rise } from '../lib/motion'
 
-function Bar({ ratio, track }: { ratio: number; track?: string }) {
+function barColor(ratio: number) {
+  if (ratio > 1) return 'var(--color-over)'
+  if (ratio > 0.9) return 'var(--color-warn)'
+  return 'var(--color-accent)'
+}
+
+function Bar({ ratio }: { ratio: number }) {
   const pct = Math.min(ratio, 1) * 100
-  const over = ratio > 1
-  const near = !over && ratio > 0.9
-  const color = over ? 'var(--color-over)' : near ? 'var(--color-warn)' : 'var(--color-accent)'
   return (
-    <div className={`h-2 w-full overflow-hidden rounded-full ${track ?? 'bg-fill'}`}>
-      <div
-        className="h-full rounded-full transition-all duration-300"
-        style={{ width: `${pct}%`, background: color }}
+    <div className="h-2 w-full overflow-hidden rounded-full bg-fill">
+      <motion.div
+        className="h-full rounded-full"
+        style={{ background: barColor(ratio) }}
+        initial={{ width: 0 }}
+        animate={{ width: `${pct}%` }}
+        transition={{ type: 'spring', stiffness: 130, damping: 22 }}
       />
+    </div>
+  )
+}
+
+/** Donut gauge: overall budget usage with a count-up % in the center. */
+function Gauge({ ratio }: { ratio: number }) {
+  const R = 52
+  const C = 2 * Math.PI * R
+  const clamped = Math.min(ratio, 1)
+  return (
+    <div className="relative h-[132px] w-[132px] shrink-0">
+      <svg viewBox="0 0 132 132" className="h-full w-full -rotate-90">
+        <circle cx="66" cy="66" r={R} fill="none" stroke="var(--color-fill)" strokeWidth="12" />
+        <motion.circle
+          cx="66"
+          cy="66"
+          r={R}
+          fill="none"
+          stroke={barColor(ratio)}
+          strokeWidth="12"
+          strokeLinecap="round"
+          strokeDasharray={C}
+          initial={{ strokeDashoffset: C }}
+          animate={{ strokeDashoffset: C * (1 - clamped) }}
+          transition={{ type: 'spring', stiffness: 60, damping: 18 }}
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <p className="text-2xl font-extrabold tabular-nums leading-none">
+          <CountUp value={Math.round(ratio * 100)} format={(n) => String(Math.round(n))} />
+          <span className="text-sm font-bold">%</span>
+        </p>
+        <p className="mt-1 text-[10px] font-medium text-mute">사용</p>
+      </div>
     </div>
   )
 }
@@ -33,31 +76,32 @@ export default function BudgetTab() {
   }
 
   return (
-    <div className="space-y-4 pt-8">
-      <header className="px-1">
+    <motion.div className="space-y-4 pt-8" variants={stagger} initial="hidden" animate="show">
+      <motion.header variants={rise} className="px-1">
         <h1 className="text-[22px] font-extrabold tracking-tight">예산</h1>
         <p className="mt-1 text-sm text-sub">지출을 입력하면 자동 저장돼요 · 원 단위, 2인 합계</p>
-      </header>
+      </motion.header>
 
-      {/* total */}
-      <section className="rounded-[28px] bg-card p-6 shadow-card">
-        <p className="text-xs font-medium text-mute">지금까지 쓴 돈</p>
-        <p className="mt-1.5 text-[32px] font-extrabold tabular-nums leading-none tracking-tight">
-          {fmtKRW(totalSpent)}
-        </p>
-        <div className="mt-5">
-          <Bar ratio={totalRatio} />
+      {/* total gauge */}
+      <motion.section variants={rise} className="rounded-[28px] bg-card p-6 shadow-card">
+        <div className="flex items-center gap-5">
+          <Gauge ratio={totalRatio} />
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-medium text-mute">지금까지 쓴 돈</p>
+            <p className="mt-1 text-[26px] font-extrabold tabular-nums leading-tight tracking-tight">
+              <CountUp value={totalSpent} format={(n) => Math.round(n).toLocaleString('ko-KR')} />
+              <span className="text-base font-bold">원</span>
+            </p>
+            <p className={`mt-2 text-xs font-bold tabular-nums ${remain >= 0 ? 'text-accent' : 'text-over'}`}>
+              {remain >= 0 ? `${fmtKRW(remain)} 남음` : `${fmtKRW(-remain)} 초과`}
+            </p>
+            <p className="mt-0.5 text-[11px] tabular-nums text-mute">예산 {fmtKRW(totalPlanned)}</p>
+          </div>
         </div>
-        <div className="mt-2.5 flex items-center justify-between text-xs">
-          <span className="tabular-nums text-mute">{Math.round(totalRatio * 100)}% 사용</span>
-          <span className={`font-bold tabular-nums ${remain >= 0 ? 'text-accent' : 'text-over'}`}>
-            {remain >= 0 ? `${fmtKRW(remain)} 남음` : `${fmtKRW(-remain)} 초과`}
-          </span>
-        </div>
-      </section>
+      </motion.section>
 
       {/* per-category */}
-      <section className="space-y-2.5">
+      <motion.section variants={rise} className="space-y-2.5">
         {BUDGET.map((c) => {
           const s = spent[c.id] ?? 0
           const ratio = s / c.planned
@@ -94,10 +138,10 @@ export default function BudgetTab() {
             </div>
           )
         })}
-      </section>
+      </motion.section>
 
       {/* converter */}
-      <section className="rounded-3xl bg-card p-5 shadow-card">
+      <motion.section variants={rise} className="rounded-3xl bg-card p-5 shadow-card">
         <div className="flex items-center gap-2">
           <ArrowRightLeft size={16} className="text-accent" />
           <h2 className="text-[15px] font-bold">엔화 계산기</h2>
@@ -132,7 +176,7 @@ export default function BudgetTab() {
             className="w-16 rounded-xl bg-fill px-2 py-1.5 text-right font-bold tabular-nums text-ink outline-none"
           />
         </label>
-      </section>
-    </div>
+      </motion.section>
+    </motion.div>
   )
 }

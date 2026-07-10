@@ -131,6 +131,14 @@ body {
   padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 6.5rem);
 }
 
+/* hide horizontal scrollbar on carousels */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* hide number input spinners */
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
