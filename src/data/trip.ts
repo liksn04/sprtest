@@ -220,6 +220,80 @@ export const BUDGET: BudgetCategory[] = [
 
 export const DEFAULT_JPY_RATE = 9.2 // 원/엔
 
+// ── 항공권 시나리오 (눈축제 개막 주간은 시세 변동이 매우 큼) ─────────────────
+
+export interface FlightScenario {
+  id: 'deal' | 'normal' | 'late' | 'icn'
+  label: string
+  tagline: string
+  perPerson: number
+  total: number // 2인 합계
+  lines: BudgetLine[]
+  recommended?: boolean
+}
+
+export const FLIGHT_SCENARIOS: FlightScenario[] = [
+  {
+    id: 'deal',
+    label: '특가 선점',
+    tagline: '지금(D-200+)부터 알림 걸고 프로모션 때 구매',
+    perPerson: 500_000,
+    total: 1_000_000,
+    recommended: true,
+    lines: [
+      { label: '왕복 특가 운임 44만 × 2인', amount: 880_000, note: '스케줄 오픈 직후·분기 프로모션이 최저가 구간' },
+      { label: '위탁수하물·좌석 지정 6만 × 2인', amount: 120_000, note: 'LCC 특가 운임은 수하물 별도' },
+    ],
+  },
+  {
+    id: 'normal',
+    label: '일반 시세',
+    tagline: '출발 3~4개월 전 구매 — 겨울 성수기 평균',
+    perPerson: 700_000,
+    total: 1_400_000,
+    lines: [
+      { label: '왕복 운임 64만 × 2인', amount: 1_280_000, note: '성수기 평균 70~80만원대의 하단 가정' },
+      { label: '위탁수하물·좌석 지정 6만 × 2인', amount: 120_000 },
+    ],
+  },
+  {
+    id: 'late',
+    label: '임박 구매',
+    tagline: '축제 주간 직전 — 가능하면 피해야 할 구간',
+    perPerson: 900_000,
+    total: 1_800_000,
+    lines: [
+      { label: '왕복 운임 84만 × 2인', amount: 1_680_000, note: '눈축제 개막 주간엔 100만+ 사례도 있음' },
+      { label: '위탁수하물·좌석 지정 6만 × 2인', amount: 120_000 },
+    ],
+  },
+  {
+    id: 'icn',
+    label: '인천발 우회',
+    tagline: '취항사가 많아 축제 기간에도 상대적으로 저렴',
+    perPerson: 570_000,
+    total: 1_140_000,
+    lines: [
+      { label: '인천—신치토세 왕복 45만 × 2인', amount: 900_000, note: '대한항공·아시아나·LCC 다수 경쟁 노선' },
+      { label: '부산↔인천 KTX·공항철도 왕복 2인', amount: 120_000, note: '약 6만 × 2인, 이동 +3시간 감안' },
+      { label: '위탁수하물·좌석 등 부가', amount: 120_000 },
+    ],
+  },
+]
+
+/** 인당 왕복 목표가 — 이 밑으로 보이면 고민 말고 결제 */
+export const FLIGHT_TARGET = 550_000
+
+/* 출발 2027-02-04 · 귀국 02-07 · 성인 2명이 미리 입력된 실시간 검색 링크 */
+export const FLIGHT_LINKS = [
+  { name: '네이버 항공권', url: 'https://flight.naver.com/flights/international/PUS-CTS-20270204/CTS-PUS-20270207?adult=2&fareType=Y' },
+  { name: '스카이스캐너', url: 'https://www.skyscanner.co.kr/transport/flights/pus/cts/270204/270207/?adultsv2=2' },
+  { name: '카약', url: 'https://www.kayak.co.kr/flights/PUS-CTS/2027-02-04/2027-02-07/2adults' },
+  { name: '에어부산', url: 'https://www.airbusan.com' },
+  { name: '진에어', url: 'https://www.jinair.com' },
+  { name: '인천발 비교', url: 'https://www.skyscanner.co.kr/transport/flights/icn/cts/270204/270207/?adultsv2=2' },
+]
+
 // ── 체크리스트 ──────────────────────────────────────────────────────────────
 
 export interface ChecklistSection {
@@ -235,6 +309,7 @@ export const CHECKLIST: ChecklistSection[] = [
     title: '예약 (서두르세요!)',
     emoji: '📌',
     items: [
+      { id: 'b0', label: '항공권 가격 알림 설정', note: '스카이스캐너·네이버 — 인당 55만 이하면 바로 구매' },
       { id: 'b1', label: '항공권 — 김해↔신치토세 왕복', note: '눈축제 성수기, 6개월 전 예약 권장' },
       { id: 'b2', label: '삿포로 호텔 2박 (2/4, 2/6)', note: '축제 기간 조기 마감 — 스스키노/오도리 도보권' },
       { id: 'b3', label: '조잔케이 료칸 1박 2식 (2/5)', note: '노천탕 + 가이세키 포함 플랜' },

@@ -8,7 +8,7 @@ import { stagger, rise } from '../lib/motion'
 
 const SUMMARY = [
   { Icon: Plane, tint: 'var(--color-cat-move)', label: '항공', title: '김해 ↔ 신치토세', sub: '직항 약 2시간 20분' },
-  { Icon: Wallet, tint: 'var(--color-cat-shop)', label: '총예산 (2인)', title: fmtKRW(TRIP.totalBudget), sub: '예산 탭에서 지출 관리' },
+  { Icon: Wallet, tint: 'var(--color-cat-shop)', label: '기준 예산 (2인)', title: fmtKRW(TRIP.totalBudget), sub: '항공 시나리오는 예산 탭에서' },
   { Icon: MapPin, tint: 'var(--color-cat-onsen)', label: '숙소 동선', title: '삿포로 2박 + 료칸 1박', sub: '스스키노 → 조잔케이' },
   { Icon: Snowflake, tint: 'var(--color-accent)', label: '눈축제', title: TRIP.festival.period, sub: TRIP.festival.note },
 ]

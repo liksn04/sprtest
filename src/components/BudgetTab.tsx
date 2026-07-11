@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { ArrowRightLeft, ChevronDown, ReceiptText } from 'lucide-react'
+import { ArrowRightLeft, ChevronDown, ReceiptText, Sparkles } from 'lucide-react'
 import CountUp from './CountUp'
-import { BUDGET, DEFAULT_JPY_RATE, TRIP, fmtKRW } from '../data/trip'
+import PriceWatch from './PriceWatch'
+import { BUDGET, DEFAULT_JPY_RATE, FLIGHT_SCENARIOS, TRIP, fmtKRW } from '../data/trip'
 import { useLocalStorage } from '../hooks/useLocalStorage'
 import { stagger, rise } from '../lib/motion'
 
@@ -65,10 +66,16 @@ export default function BudgetTab() {
   const [spent, setSpent] = useLocalStorage<Record<string, number>>('budget-spent-v1', {})
   const [jpy, setJpy] = useLocalStorage<number>('jpy-amount-v1', 1000)
   const [rate, setRate] = useLocalStorage<number>('jpy-rate-v1', DEFAULT_JPY_RATE)
+  const [scenarioId, setScenarioId] = useLocalStorage<string>('flight-scenario-v1', 'deal')
   const [open, setOpen] = useState<Record<string, boolean>>({})
 
-  const totalPlanned = TRIP.totalBudget
-  const totalSpent = BUDGET.reduce((sum, c) => sum + (spent[c.id] ?? 0), 0)
+  const scenario = FLIGHT_SCENARIOS.find((s) => s.id === scenarioId) ?? FLIGHT_SCENARIOS[0]
+  const cats = BUDGET.map((c) =>
+    c.id === 'flight' ? { ...c, planned: scenario.total, note: scenario.tagline, lines: scenario.lines } : c,
+  )
+  const totalPlanned = cats.reduce((sum, c) => sum + c.planned, 0)
+  const baselineDelta = totalPlanned - TRIP.totalBudget
+  const totalSpent = cats.reduce((sum, c) => sum + (spent[c.id] ?? 0), 0)
   const totalRatio = totalSpent / totalPlanned
   const remain = totalPlanned - totalSpent
 
@@ -102,13 +109,24 @@ export default function BudgetTab() {
             <p className="mt-0.5 text-[11px] tabular-nums text-mute">
               예산 {fmtKRW(totalPlanned)} · 인당 {fmtKRW(totalPlanned / 2)}
             </p>
+            {baselineDelta !== 0 && (
+              <p className={`mt-1 text-[11px] font-bold tabular-nums ${baselineDelta > 0 ? 'text-warn' : 'text-accent'}`}>
+                기준 300만 대비 {baselineDelta > 0 ? '+' : '−'}
+                {fmtKRW(Math.abs(baselineDelta))} · {scenario.label} 기준
+              </p>
+            )}
           </div>
         </div>
       </motion.section>
 
+      {/* flight deal radar */}
+      <motion.div variants={rise}>
+        <PriceWatch />
+      </motion.div>
+
       {/* per-category */}
       <motion.section variants={rise} className="space-y-2.5">
-        {BUDGET.map((c) => {
+        {cats.map((c) => {
           const s = spent[c.id] ?? 0
           const ratio = s / c.planned
           const isOpen = !!open[c.id]
@@ -132,6 +150,34 @@ export default function BudgetTab() {
                   <span className="text-xs font-medium text-sub">원</span>
                 </label>
               </div>
+              {c.id === 'flight' && (
+                <div className="mt-3.5 grid grid-cols-2 gap-1.5">
+                  {FLIGHT_SCENARIOS.map((s) => {
+                    const active = s.id === scenario.id
+                    return (
+                      <button
+                        key={s.id}
+                        onClick={() => setScenarioId(s.id)}
+                        aria-pressed={active}
+                        className={`press relative min-h-[54px] rounded-2xl px-2.5 py-2 text-left transition-colors ${
+                          active ? 'bg-accent text-white' : 'bg-fill text-sub'
+                        }`}
+                      >
+                        <span className="flex items-center gap-1 text-xs font-bold">
+                          {s.label}
+                          {s.recommended && (
+                            <Sparkles size={11} className={active ? 'text-white/80' : 'text-warn'} />
+                          )}
+                        </span>
+                        <span className={`mt-0.5 block text-[11px] font-bold tabular-nums ${active ? 'text-white/85' : 'text-mute'}`}>
+                          인당 {Math.round(s.perPerson / 10_000)}만 · 총 {Math.round(s.total / 10_000)}만
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+
               <div className="mt-3.5 flex items-center gap-2.5">
                 <div className="flex-1">
                   <Bar ratio={ratio} />
