@@ -1,6 +1,7 @@
 import { motion } from 'motion/react'
 import { Check } from 'lucide-react'
 import CountUp from './CountUp'
+import BackupCard from './BackupCard'
 import { CHECKLIST } from '../data/trip'
 import { useLocalStorage } from '../hooks/useLocalStorage'
 import { stagger, rise } from '../lib/motion'
@@ -120,6 +121,10 @@ export default function ChecklistTab() {
           </motion.section>
         )
       })}
+
+      <motion.div variants={rise}>
+        <BackupCard />
+      </motion.div>
     </motion.div>
   )
 }

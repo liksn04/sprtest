@@ -5,6 +5,7 @@ import SnowEffect from './SnowEffect'
 import RouteMap from './RouteMap'
 import { TRIP, fmtKRW } from '../data/trip'
 import { stagger, rise } from '../lib/motion'
+import { useSapporoWeather, weatherEmoji } from '../lib/live'
 
 const SUMMARY = [
   { Icon: Plane, tint: 'var(--color-cat-move)', label: '항공', title: '김해 ↔ 신치토세', sub: '직항 약 2시간 20분' },
@@ -43,6 +44,11 @@ function TempRange({ lo, hi }: { lo: number; hi: number }) {
 }
 
 export default function HomeTab() {
+  const { current, tripDaily } = useSapporoWeather()
+  const rows = tripDaily
+    ? tripDaily.map((f, i) => ({ day: `DAY ${i + 1}`, lo: f.lo, hi: f.hi, emoji: weatherEmoji(f.code) }))
+    : WEATHER.map((w) => ({ ...w, emoji: undefined as string | undefined }))
+
   return (
     <motion.div className="space-y-4 pt-8" variants={stagger} initial="hidden" animate="show">
       <motion.header variants={rise} className="px-1">
@@ -101,12 +107,25 @@ export default function HomeTab() {
       <motion.section variants={rise} className="rounded-3xl bg-card p-5 shadow-card">
         <div className="flex items-center justify-between">
           <h2 className="text-[15px] font-bold">🌨️ 여행 기간 기온</h2>
-          <span className="text-[11px] font-medium text-mute">2월 초 평년값 · °C</span>
+          <span className="text-[11px] font-medium text-mute">
+            {tripDaily ? '실시간 예보 · °C' : '2월 초 평년값 · °C'}
+          </span>
         </div>
+        {current && (
+          <div className="mt-3 flex items-center justify-between rounded-2xl bg-accent-soft px-3.5 py-2.5">
+            <span className="text-xs font-bold text-accent">
+              지금 삿포로 {weatherEmoji(current.code)} {current.temp}°
+            </span>
+            <span className="text-[11px] font-medium tabular-nums text-accent/80">
+              체감 {current.feels}°{current.snowfall > 0 ? ' · 눈 내리는 중' : ''}
+            </span>
+          </div>
+        )}
         <div className="mt-4 space-y-3">
-          {WEATHER.map((w) => (
+          {rows.map((w) => (
             <div key={w.day} className="flex items-center gap-3">
               <span className="w-12 shrink-0 text-[11px] font-bold text-mute">{w.day}</span>
+              {w.emoji && <span className="w-5 shrink-0 text-center text-xs">{w.emoji}</span>}
               <span className="w-8 shrink-0 text-right text-xs font-bold tabular-nums text-accent">{w.lo}°</span>
               <TempRange lo={w.lo} hi={w.hi} />
               <span className="w-7 shrink-0 text-xs font-bold tabular-nums">{w.hi}°</span>

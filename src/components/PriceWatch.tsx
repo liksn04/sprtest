@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { motion } from 'motion/react'
-import { Radar, Plus, X, ExternalLink } from 'lucide-react'
+import { Radar, Plus, X, ExternalLink, Zap } from 'lucide-react'
 import { FLIGHT_LINKS, FLIGHT_TARGET, fmtKRW } from '../data/trip'
 import { useLocalStorage } from '../hooks/useLocalStorage'
+import { useLiveFare } from '../lib/live'
 
 interface PricePoint {
   d: string // ISO date
@@ -69,6 +70,7 @@ function TrendChart({ logs }: { logs: PricePoint[] }) {
 export default function PriceWatch() {
   const [logs, setLogs] = useLocalStorage<PricePoint[]>('flight-price-log-v1', [])
   const [draft, setDraft] = useState('')
+  const liveFare = useLiveFare()
 
   const add = () => {
     const p = Number(draft.replaceAll(',', ''))
@@ -105,6 +107,23 @@ export default function PriceWatch() {
           </a>
         ))}
       </div>
+
+      {/* live quote (Amadeus serverless — 키 설정 시 활성화) */}
+      {liveFare && (
+        <div className="mt-4 flex items-center justify-between rounded-2xl bg-accent-soft px-3.5 py-2.5">
+          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-accent">
+            <Zap size={12} /> 자동 조회 최저가 · 인당 {fmtKRW(liveFare.perPerson)}
+          </span>
+          <button
+            onClick={() =>
+              setLogs((prev) => [...prev, { d: liveFare.fetchedAt, p: liveFare.perPerson }].slice(-12))
+            }
+            className="press min-h-[30px] rounded-full bg-accent px-2.5 text-[10px] font-bold text-white"
+          >
+            기록에 추가
+          </button>
+        </div>
+      )}
 
       {/* status */}
       {last && (
