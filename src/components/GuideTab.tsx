@@ -1,5 +1,6 @@
 import { motion } from 'motion/react'
 import { MapPin, Clock, Lightbulb, TrainFront } from 'lucide-react'
+import TripMap from './TripMap'
 import { VENUES, FOOD_SPOTS, TRANSIT, TRANSIT_TIP, mapUrl, type Venue } from '../data/trip'
 import { stagger, rise } from '../lib/motion'
 
@@ -17,6 +18,11 @@ export default function GuideTab() {
         <h1 className="text-[22px] font-extrabold tracking-tight">가이드</h1>
         <p className="mt-1 text-sm text-sub">여행 중 바로 꺼내 보는 현지 정보</p>
       </motion.header>
+
+      {/* interactive map */}
+      <motion.div variants={rise}>
+        <TripMap />
+      </motion.div>
 
       {/* venue carousel */}
       <motion.section variants={rise}>

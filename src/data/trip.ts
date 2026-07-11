@@ -452,6 +452,49 @@ export const TRANSIT: TransitRoute[] = [
 
 export const TRANSIT_TIP = '아이폰 지갑에 Suica를 발급해두면 JR·지하철·편의점까지 논스톱이에요. 겨울 폭설로 JR 지연이 잦으니 공항 갈 땐 여유 있게!'
 
+// ── 여행 지도 (Google Maps) ──────────────────────────────────────────────────
+
+export type SpotCat = 'venue' | 'food' | 'stay' | 'transit'
+
+export interface MapSpot {
+  name: string
+  lat: number
+  lng: number
+  emoji: string
+  cat: SpotCat
+  desc: string
+  map: string // 구글맵 검색어
+}
+
+export const SPOT_CAT_COLOR: Record<SpotCat, string> = {
+  venue: '#3182f6',
+  food: '#eb6834',
+  stay: '#e34948',
+  transit: '#4a3aa7',
+}
+
+export const MAP_SPOTS: MapSpot[] = [
+  { name: '신치토세공항', lat: 42.7752, lng: 141.6923, emoji: '✈️', cat: 'transit', desc: 'IN 2/4 · OUT 2/7 — JR 40분', map: 'New Chitose Airport' },
+  { name: '삿포로역', lat: 43.0687, lng: 141.3508, emoji: '🚉', cat: 'transit', desc: 'JR·버스 허브, 갓파라이너 출발', map: 'JR Sapporo Station' },
+  { name: '오도리 공원', lat: 43.0595, lng: 141.3472, emoji: '🏔️', cat: 'venue', desc: '눈축제 메인 — 대설상 & 맵핑', map: 'Odori Park Sapporo' },
+  { name: '삿포로 TV타워', lat: 43.0611, lng: 141.3564, emoji: '🗼', cat: 'venue', desc: '축제 파노라마 전망대 ¥1,000', map: 'Sapporo TV Tower' },
+  { name: '스스키노', lat: 43.0552, lng: 141.3534, emoji: '🧊', cat: 'venue', desc: '얼음축제 + 숙소 거점 + 밤거리', map: 'Susukino Sapporo' },
+  { name: '니조시장', lat: 43.0574, lng: 141.361, emoji: '🦀', cat: 'food', desc: 'D2 아침 카이센동', map: 'Nijo Market Sapporo' },
+  { name: '수프카레 GARAKU', lat: 43.057, lng: 141.353, emoji: '🍛', cat: 'food', desc: 'D1 늦은 점심', map: 'Soup Curry GARAKU Sapporo' },
+  { name: '징기스칸 다루마 본점', lat: 43.0536, lng: 141.3562, emoji: '🍖', cat: 'food', desc: 'D2 점심 양고기', map: 'Jingisukan Daruma Honten' },
+  { name: '조잔케이 온천', lat: 42.967, lng: 141.166, emoji: '♨️', cat: 'stay', desc: 'D2 료칸 1박 — 노천탕·가이세키', map: 'Jozankei Onsen' },
+  { name: '오타루 운하', lat: 43.199, lng: 140.9945, emoji: '🏮', cat: 'venue', desc: 'D3 해질녘 가스등 야경', map: 'Otaru Canal' },
+  { name: '사카이마치 거리', lat: 43.1925, lng: 141.0032, emoji: '🛍️', cat: 'venue', desc: '오르골당·키타이치 글라스', map: 'Sakaimachi Street Otaru' },
+  { name: '르타오 본점', lat: 43.1889, lng: 141.0089, emoji: '🍰', cat: 'food', desc: 'D3 카페 — 더블 프로마쥬', map: 'LeTAO Otaru' },
+]
+
+/* Day별 이동 동선 (지도 폴리라인) */
+export const MAP_ROUTES: { color: string; path: { lat: number; lng: number }[] }[] = [
+  { color: '#3182f6', path: [{ lat: 42.7752, lng: 141.6923 }, { lat: 43.0687, lng: 141.3508 }] }, // 공항→삿포로
+  { color: '#e34948', path: [{ lat: 43.0687, lng: 141.3508 }, { lat: 42.967, lng: 141.166 }] }, // 삿포로→조잔케이
+  { color: '#1baf7a', path: [{ lat: 43.0687, lng: 141.3508 }, { lat: 43.199, lng: 140.9945 }] }, // 삿포로→오타루
+]
+
 // ── 유틸 ────────────────────────────────────────────────────────────────────
 
 export const fmtKRW = (n: number) => `${Math.round(n).toLocaleString('ko-KR')}원`
