@@ -1,5 +1,6 @@
-import { motion } from 'motion/react'
-import { ArrowRightLeft } from 'lucide-react'
+import { useState } from 'react'
+import { AnimatePresence, motion } from 'motion/react'
+import { ArrowRightLeft, ChevronDown, ReceiptText } from 'lucide-react'
 import CountUp from './CountUp'
 import { BUDGET, DEFAULT_JPY_RATE, TRIP, fmtKRW } from '../data/trip'
 import { useLocalStorage } from '../hooks/useLocalStorage'
@@ -64,6 +65,7 @@ export default function BudgetTab() {
   const [spent, setSpent] = useLocalStorage<Record<string, number>>('budget-spent-v1', {})
   const [jpy, setJpy] = useLocalStorage<number>('jpy-amount-v1', 1000)
   const [rate, setRate] = useLocalStorage<number>('jpy-rate-v1', DEFAULT_JPY_RATE)
+  const [open, setOpen] = useState<Record<string, boolean>>({})
 
   const totalPlanned = TRIP.totalBudget
   const totalSpent = BUDGET.reduce((sum, c) => sum + (spent[c.id] ?? 0), 0)
@@ -74,6 +76,8 @@ export default function BudgetTab() {
     const n = Math.max(0, Number(raw.replaceAll(',', '')) || 0)
     setSpent((prev) => ({ ...prev, [id]: n }))
   }
+
+  const toggleOpen = (id: string) => setOpen((prev) => ({ ...prev, [id]: !prev[id] }))
 
   return (
     <motion.div className="space-y-4 pt-8" variants={stagger} initial="hidden" animate="show">
@@ -95,7 +99,9 @@ export default function BudgetTab() {
             <p className={`mt-2 text-xs font-bold tabular-nums ${remain >= 0 ? 'text-accent' : 'text-over'}`}>
               {remain >= 0 ? `${fmtKRW(remain)} 남음` : `${fmtKRW(-remain)} 초과`}
             </p>
-            <p className="mt-0.5 text-[11px] tabular-nums text-mute">예산 {fmtKRW(totalPlanned)}</p>
+            <p className="mt-0.5 text-[11px] tabular-nums text-mute">
+              예산 {fmtKRW(totalPlanned)} · 인당 {fmtKRW(totalPlanned / 2)}
+            </p>
           </div>
         </div>
       </motion.section>
@@ -105,6 +111,7 @@ export default function BudgetTab() {
         {BUDGET.map((c) => {
           const s = spent[c.id] ?? 0
           const ratio = s / c.planned
+          const isOpen = !!open[c.id]
           return (
             <div key={c.id} className="rounded-3xl bg-card p-4 shadow-card">
               <div className="flex items-center justify-between gap-2">
@@ -135,6 +142,48 @@ export default function BudgetTab() {
                   {ratio > 1 ? `+${fmtKRW(s - c.planned)}` : `/ ${fmtKRW(c.planned)}`}
                 </span>
               </div>
+
+              {/* estimate breakdown */}
+              <button
+                onClick={() => toggleOpen(c.id)}
+                aria-expanded={isOpen}
+                className="press mt-3 flex min-h-[36px] w-full items-center justify-between rounded-xl bg-fill px-3"
+              >
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-sub">
+                  <ReceiptText size={12} /> 산정 내역 {c.lines.length}건
+                </span>
+                <ChevronDown
+                  size={14}
+                  className={`text-mute transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+                />
+              </button>
+              <AnimatePresence initial={false}>
+                {isOpen && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.22, ease: [0.3, 0, 0.2, 1] }}
+                    className="overflow-hidden"
+                  >
+                    <ul className="mt-1 divide-y divide-line px-1">
+                      {c.lines.map((line) => (
+                        <li key={line.label} className="flex items-start justify-between gap-3 py-2.5">
+                          <div className="min-w-0">
+                            <p className="text-xs font-semibold leading-snug">{line.label}</p>
+                            {line.note && <p className="mt-0.5 text-[10px] leading-snug text-mute">{line.note}</p>}
+                          </div>
+                          <p className="shrink-0 text-xs font-bold tabular-nums">{fmtKRW(line.amount)}</p>
+                        </li>
+                      ))}
+                      <li className="flex items-center justify-between py-2.5">
+                        <p className="text-xs font-bold text-sub">계획 합계</p>
+                        <p className="text-xs font-extrabold tabular-nums text-accent">{fmtKRW(c.planned)}</p>
+                      </li>
+                    </ul>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           )
         })}

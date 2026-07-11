@@ -111,22 +111,111 @@ export const ITINERARY: DayPlan[] = [
 
 // ── 예산 (2인 총액, 원) ─────────────────────────────────────────────────────
 
+export interface BudgetLine {
+  label: string
+  amount: number // 2인 합계, 원
+  note?: string
+}
+
 export interface BudgetCategory {
   id: string
   label: string
-  planned: number
+  planned: number // = lines 합계
   note: string
+  lines: BudgetLine[]
 }
 
+/* 2026년 기준 시세로 산정 (¥100 ≈ 920원). 눈축제 주간은 항공·숙박이 더 뛸 수 있어요. */
 export const BUDGET: BudgetCategory[] = [
-  { id: 'flight', label: '항공권', planned: 1_000_000, note: '김해—신치토세 왕복 2인, 성수기 LCC' },
-  { id: 'hotel', label: '삿포로 숙박', planned: 400_000, note: '스스키노/오도리 인근 2박' },
-  { id: 'ryokan', label: '조잔케이 료칸', planned: 550_000, note: '1박 2식(가이세키+조식)' },
-  { id: 'food', label: '식비', planned: 400_000, note: '약 6끼 외식 + 카페/야식' },
-  { id: 'transport', label: '교통', planned: 150_000, note: 'JR·지하철·갓파라이너 등' },
-  { id: 'activity', label: '관광·입장료', planned: 150_000, note: 'TV타워 전망대 등' },
-  { id: 'shopping', label: '쇼핑·기념품', planned: 250_000, note: '로이스, 시로이코이비토 등' },
-  { id: 'etc', label: '예비비', planned: 100_000, note: '비상금' },
+  {
+    id: 'flight',
+    label: '항공권',
+    planned: 1_000_000,
+    note: '김해—신치토세 왕복, 인당 50만원',
+    lines: [
+      { label: '왕복 운임 44만 × 2인', amount: 880_000, note: '2월 평균 시세 — 축제 주간·주말은 60만+, 일찍 끊을수록 이득' },
+      { label: '위탁수하물·좌석 지정 6만 × 2인', amount: 120_000, note: 'LCC 특가운임은 수하물 별도' },
+    ],
+  },
+  {
+    id: 'hotel',
+    label: '삿포로 호텔',
+    planned: 440_000,
+    note: '스스키노/오도리 트윈 2박 (2/4, 2/6)',
+    lines: [
+      { label: '1박째 2/4(목) 트윈', amount: 220_000, note: '눈축제 기간 3성급 ¥24,000 수준' },
+      { label: '2박째 2/6(토) 트윈', amount: 220_000, note: '토요일이라 조기 마감 주의' },
+    ],
+  },
+  {
+    id: 'ryokan',
+    label: '조잔케이 료칸',
+    planned: 560_000,
+    note: '1박 2식 — 2/5(금), 2인',
+    lines: [
+      { label: '가이세키 석식 + 조식 플랜 2인', amount: 560_000, note: '노천탕 중상급 기준 ¥61,000 — 뷰호텔 뷔페 플랜이면 ~40만으로 절약 가능' },
+    ],
+  },
+  {
+    id: 'food',
+    label: '식비',
+    planned: 420_000,
+    note: '외식 8끼 + 카페·간식 (가이세키·료칸 조식 제외)',
+    lines: [
+      { label: 'D1 점심 · 수프카레 GARAKU', amount: 30_000, note: '¥1,600 × 2인' },
+      { label: 'D1 야식 · 라멘요코초 미소라멘', amount: 21_000, note: '¥1,150 × 2인' },
+      { label: 'D2 아침 · 니조시장 카이센동', amount: 46_000, note: '¥2,500 × 2인' },
+      { label: 'D2 점심 · 징기스칸 다루마', amount: 46_000, note: '¥2,500 × 2인' },
+      { label: 'D3 점심 · 오타루 스시', amount: 65_000, note: '¥3,500 × 2인 세트' },
+      { label: 'D3 카페 · 르타오 본점', amount: 28_000, note: '¥1,500 × 2인, 더블 프로마쥬 세트' },
+      { label: 'D3 저녁 · 스스키노 마지막 밤', amount: 55_000, note: '¥3,000 × 2인 + 시메파르페' },
+      { label: 'D4 점심 · 공항 라멘도조', amount: 23_000, note: '¥1,250 × 2인' },
+      { label: '카페·간식·편의점 버퍼', amount: 106_000, note: '아침 커피, 야간 편의점, 축제 간식' },
+    ],
+  },
+  {
+    id: 'transport',
+    label: '교통',
+    planned: 140_000,
+    note: '현지 이동 전체 (2인 왕복)',
+    lines: [
+      { label: 'JR 쾌속 에어포트 공항 왕복', amount: 42_000, note: '¥1,150 × 2인 × 2회' },
+      { label: '갓파라이너호 조잔케이 왕복', amount: 35_000, note: '¥960 × 2인 × 2회 — 예약제' },
+      { label: 'JR 오타루 왕복', amount: 28_000, note: '¥750 × 2인 × 2회' },
+      { label: '지하철·시내버스', amount: 35_000, note: '¥210~ × 여러 회, Suica 충전' },
+    ],
+  },
+  {
+    id: 'activity',
+    label: '관광·체험',
+    planned: 140_000,
+    note: '입장료 + 축제 즐길거리',
+    lines: [
+      { label: 'TV타워 전망대', amount: 18_000, note: '¥1,000 × 2인 — 야경 타임 추천' },
+      { label: '눈축제 먹거리·굿즈', amount: 45_000, note: '회장 포장마차, 핫와인·구이' },
+      { label: '오타루 오르골·유리공예', amount: 45_000, note: '소품 1~2개 기준' },
+      { label: '기타 입장·체험', amount: 32_000, note: '츠도무 튜빙, 신사 오마모리 등' },
+    ],
+  },
+  {
+    id: 'shopping',
+    label: '쇼핑·기념품',
+    planned: 220_000,
+    note: '공항·백화점 면세 포함',
+    lines: [
+      { label: '로이스 초콜릿', amount: 40_000, note: '생초콜릿 4~5박스' },
+      { label: '시로이코이비토', amount: 40_000, note: '선물용 2~3박스' },
+      { label: '마루세이 버터샌드·키노토야', amount: 40_000 },
+      { label: '지인 선물·기타', amount: 100_000 },
+    ],
+  },
+  {
+    id: 'etc',
+    label: '예비비',
+    planned: 80_000,
+    note: '비상금 + 환율 변동 대비',
+    lines: [{ label: '예비 현금', amount: 80_000, note: '남으면 공항 쇼핑으로!' }],
+  },
 ]
 
 export const DEFAULT_JPY_RATE = 9.2 // 원/엔
